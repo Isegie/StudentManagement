@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/studApp.iml" filepath="$PROJECT_DIR$/.idea/studApp.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring_TVZ_workspace/studapp.iml" filepath="$PROJECT_DIR$/spring_TVZ_workspace/studapp.iml" />
+    </modules>
+  </component>
+</project>
