@@ -3,18 +3,24 @@ package hr.tvz.segota.studapp.student;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import org.junit.Rule;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.VerificationCollector;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.jdbc.AutoConfigureDataJdbc;
 import org.springframework.boot.test.autoconfigure.orm.jpa.AutoConfigureDataJpa;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.util.NestedServletException;
 
 import java.time.LocalDate;
 
@@ -36,7 +42,11 @@ class StudentControllerTest {
     @Mock
     private StudentService studentService;
 
-    ObjectMapper mapper = new ObjectMapper();
+    @Rule
+    public VerificationCollector verificationCollector = MockitoJUnit.collector();
+
+    @Mock
+    ObjectMapper mapper;
 
 
     void setUp() {
@@ -50,8 +60,8 @@ class StudentControllerTest {
                 with(user("admin")
                         .password("test")
                         .roles("ADMIN"))).andExpect(status().isOk());
-        /*  DODATNA PROVJERA I ZA SAVE-ANOG STUDENTA Janko Robic
-                this.mockMvc.perform(get("/student/").
+
+        this.mockMvc.perform(get("/student/").
                 with(user("admin")
                         .password("test")
                         .roles("ADMIN")).with(csrf()).contentType(MediaType.APPLICATION_JSON)
@@ -61,9 +71,7 @@ class StudentControllerTest {
                         .json(
                                 "[{'firstName':'Mario','lastName':'Lebic','jmbag':'0213399738','numberOfECTS':24}," +
                                         "{'firstName':'Karla','lastName':'Pilic','jmbag':'0113092837','numberOfECTS':97}," +
-                                        "{'firstName':'Lana','lastName':'Kutes','jmbag':'0249938473','numberOfECTS':101}," +
-                                        "{'firstName':'Janko','lastName':'Robic','jmbag':'0369900928','numberOfECTS':156}]")).andDo(print());
-*/
+                                        "{'firstName':'Lana','lastName':'Kutes','jmbag':'0249938473','numberOfECTS':101}]")).andDo(print());
     }
 
 
@@ -120,6 +128,24 @@ class StudentControllerTest {
     }
 
     @Test
-    void delete() {
+    void testStudentByJmbagNotFound() {
+        Throwable throwable = Assertions.assertThrows(NestedServletException.class,
+                () -> mockMvc.perform(get("/student/23").with(user("admin").password("test")
+                        .roles("ADMIN")).
+                        with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound()));
+
+        Assertions.assertEquals(EmptyResultDataAccessException.class, throwable.getCause().getClass());
     }
+    /*
+    @Test
+    void delete() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/student/0113092837")
+                .with(user("admin").password("test")
+                        .roles("ADMIN")).with(csrf()).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
+
+        verify(studentService, times(1)).deleteByJMBAG("0113092837");
+    }
+    */
+
 }
