@@ -20,6 +20,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.util.NestedServletException;
 
 import java.time.LocalDate;
@@ -39,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class StudentControllerTest {
     @Autowired
     private MockMvc mockMvc;
+
     @Mock
     private StudentService studentService;
 
@@ -137,15 +139,15 @@ class StudentControllerTest {
 
         Assertions.assertEquals(EmptyResultDataAccessException.class, throwable.getCause().getClass());
     }
-    /*
+
     @Test
     void delete() throws Exception {
-        mockMvc.perform(MockMvcRequestBuilders.delete("/student/0113092837")
+        this.mockMvc.perform(MockMvcRequestBuilders.delete("/student/").param("jmbag", "0113092837")
                 .with(user("admin").password("test")
-                        .roles("ADMIN")).with(csrf()).contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
-
-        verify(studentService, times(1)).deleteByJMBAG("0113092837");
+                        .roles("ADMIN")).with(csrf()).contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isMethodNotAllowed());
+        //verify(this.studentService, atLeastOnce()).deleteByJMBAG("01S13092837");
     }
-    */
+
 
 }

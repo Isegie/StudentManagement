@@ -46,7 +46,7 @@ public class StudentController {
         return studentService.update(jmbag, updateStudentCommand).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @DeleteMapping("/{jmbag}")
     public void delete(@PathVariable String jmbag) {
         studentService.deleteByJMBAG(jmbag);
