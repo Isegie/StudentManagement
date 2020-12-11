@@ -4,24 +4,34 @@ import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 
-@SpringBootTest
+@DataJpaTest
 @ExtendWith(SpringExtension.class)
 public class StudentJpaTest {
 
     private EntityManagerFactory entityManagerFactory;
+    @Autowired
     private EntityManager entityManager;
+    @Autowired
+    private DataSource dataSource;
+
+    private StudentService studentService;
+
     private List<Student> listOfStudents = new ArrayList<>();
+
 
     @BeforeEach
     public void setUp() {
@@ -78,4 +88,28 @@ public class StudentJpaTest {
         Assert.assertEquals(listOfStudents.size(), fetchedEmStudents.size());
     }
 
+    @Test
+    @Transactional
+    public void testStudentJmbag() {
+
+        entityManager.getTransaction().begin();
+
+        StudentCommand mockStudentCommand = new StudentCommand();
+        mockStudentCommand.setFirstName("Mario");
+        mockStudentCommand.setLastName("Lebic");
+        mockStudentCommand.setJmbag("0213399738");
+        mockStudentCommand.setDateOfBirth(Timestamp.valueOf("1992-02-12 00:00:05").toLocalDateTime().toLocalDate());
+        mockStudentCommand.setNumberOfECTS(24);
+
+        Student mockStudent = new Student(mockStudentCommand.getFirstName(), mockStudentCommand.getLastName(), mockStudentCommand.getJmbag(), mockStudentCommand.getDateOfBirth(), mockStudentCommand.getNumberOfECTS());
+
+        entityManager.persist(mockStudent);
+
+        entityManager.getTransaction().commit();
+
+        Student fetchedEmStudent = entityManager.find(Student.class, 1L);
+
+        Assert.assertNotNull(fetchedEmStudent);
+        Assert.assertEquals(mockStudent.getJmbag(), fetchedEmStudent.getJmbag());
+    }
 }

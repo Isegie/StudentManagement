@@ -8,6 +8,7 @@
         <class>hr.tvz.segota.studapp.student.Student</class>
         <class>hr.tvz.segota.studapp.student.StudentCommand</class>
         <class>hr.tvz.segota.studapp.course.Course</class>
+        <class>hr.tvz.segota.studapp.student.StudentRepository</class>
         <properties>
             <property name="javax.persistence.jdbc.driver"
                       value="org.h2.Driver"/>
